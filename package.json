@@ -9,8 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "code": "^5.2.0",
     "hapi": "^17.6.0",
+    "hapi-auth-jwt2": "^8.1.0",
     "lab": "^16.1.0",
     "mongoose": "^5.3.2"
   }
