@@ -6,18 +6,33 @@ const BaseRoute = require('./src/routes/base.route');
 const UserRoute = require('./src/routes/user.route');
 const DB = require('./src/utils/db');
 const { key } = require('./src/utils/config');
-
-const validate = (decoded, request) => {
-
-    // TODO
-    return { isValid: true };
-};
-
+const User = require('./src/models/user');
 
 const server = Hapi.server({
     port: 3000,
     host: 'localhost'
 });
+
+server.app.user = null;
+
+const validate = async (decoded, request) => {
+
+    try {
+        const user = await User.findById(decoded._id).exec();
+        if (user) {
+            server.app.user = { ...user };
+            return { isValid: true };
+        }
+
+        return { isValid: false };
+
+    }
+    catch (error) {
+        return { isValid: false };
+    }
+};
+
+
 
 const init = async () => {
 

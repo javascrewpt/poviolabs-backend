@@ -4,6 +4,7 @@ const Mongoose = require('mongoose');
 const Config = require('./config');
 
 const { url, user, pass } = Config;
+Mongoose.set('useFindAndModify', false);
 
 module.exports.connect = () => {
 

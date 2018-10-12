@@ -1,17 +1,12 @@
 'use strict';
 
 const Joi = require('joi');
+const JWT = require('jsonwebtoken');
+const { key } = require('../utils/config');
 
 const UserController = require('../controllers/user');
 
 module.exports = [{
-    method: 'GET',
-    path: '/most-liked',
-    options: {
-        auth: false
-    },
-    handler: UserController.list
-}, {
     method: 'POST',
     path: '/signup',
     handler: UserController.signup,
@@ -19,7 +14,7 @@ module.exports = [{
         auth: false,
         validate: {
             payload: {
-                username: Joi.string().alphanum().min(3).max(30).required(),
+                username: Joi.string().min(3).max(30).required(),
                 password: Joi.string().min(3).max(200).required()
             }
         }
@@ -32,9 +27,52 @@ module.exports = [{
         auth: false,
         validate: {
             payload: {
-                username: Joi.string().alphanum().min(3).max(30).required(),
+                username: Joi.string().min(3).max(30).required(),
                 password: Joi.string().min(3).max(200).required()
             }
         }
+    }
+}, {
+    method: 'GET',
+    path: '/me',
+    handler: UserController.me,
+    options: {
+        auth: 'jwt'
+    }
+}, {
+    method: 'GET',
+    path: '/user/{id}',
+    handler: UserController.userId,
+    options: {
+        auth: false
+    }
+}, {
+    method: 'GET',
+    path: '/user/{id}/like',
+    handler: UserController.like,
+    options: {
+        auth: 'jwt'
+    }
+}, {
+    method: 'GET',
+    path: '/user/{id}/unlike',
+    handler: UserController.unlike,
+    options: {
+        auth: 'jwt'
+    }
+}, {
+    method: 'GET',
+    path: '/most-liked',
+    config: {
+        pre: [{
+            method: (request, h) => {
+
+                const user = request.headers.authorization ? JWT.verify(request.headers.authorization, key) : null;
+                return user ? user._id : null;
+            },
+            assign: 'userId'
+        }],
+        auth: false,
+        handler: UserController.list
     }
 }];
