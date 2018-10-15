@@ -6,6 +6,7 @@ const Server = require('../server');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
+const { apiPrefix } = require('../src/utils/config');
 
 describe('Deployment.', () => {
 
@@ -13,7 +14,7 @@ describe('Deployment.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: '/'
+            url: `${apiPrefix}/`
         });
 
         expect(response.statusCode).to.equal(400);

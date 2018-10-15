@@ -5,7 +5,7 @@ const Lab = require('lab');
 const Server = require('../server');
 const JWT = require('jsonwebtoken');
 const Faker = require('faker');
-const { key } = require('../src/utils/config');
+const { key, apiPrefix } = require('../src/utils/config');
 
 const { describe, before, it } = exports.lab = Lab.script();
 const { expect } = Code;
@@ -15,7 +15,7 @@ const User = require('../src/models/user');
 
 const requestSignup = {
     method: 'POST',
-    url: '/signup',
+    url: `${apiPrefix}/signup`,
     payload: {}
 };
 

@@ -5,7 +5,7 @@ const Lab = require('lab');
 const Server = require('../server');
 const JWT = require('jsonwebtoken');
 const Faker = require('faker');
-const { key } = require('../src/utils/config');
+const { key, apiPrefix } = require('../src/utils/config');
 
 const { describe, before, it } = exports.lab = Lab.script();
 const { expect } = Code;
@@ -15,13 +15,13 @@ const User = require('../src/models/user');
 
 const requestSignup = {
     method: 'POST',
-    url: '/signup',
+    url: `${apiPrefix}/signup`,
     payload: {}
 };
 
 const requestLogin = {
     method: 'POST',
-    url: '/login',
+    url: `${apiPrefix}/login`,
     payload: {}
 };
 
@@ -110,7 +110,7 @@ describe('Logins.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: '/me',
+            url: `${apiPrefix}/me`,
             headers: {
                 'Authorization': token
             }
@@ -135,7 +135,7 @@ describe('Logins.', () => {
 
         const response = await Server.inject({
             method: 'POST',
-            url: '/update-password',
+            url: `${apiPrefix}/update-password`,
             headers: {
                 'Authorization': token
             },
@@ -164,7 +164,7 @@ describe('Logins.', () => {
 
         const response = await Server.inject({
             method: 'POST',
-            url: '/update-password',
+            url: `${apiPrefix}/update-password`,
             headers: {
                 'Authorization': token
             },

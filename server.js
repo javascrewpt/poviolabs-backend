@@ -5,7 +5,7 @@ const Hapi = require('hapi');
 const BaseRoute = require('./src/routes/base.route');
 const UserRoute = require('./src/routes/user.route');
 const DB = require('./src/utils/db');
-const { key } = require('./src/utils/config');
+const { key, apiPrefix } = require('./src/utils/config');
 const User = require('./src/models/user');
 
 const server = Hapi.server({
@@ -15,6 +15,7 @@ const server = Hapi.server({
 
 server.app.user = null;
 server.log(['error', 'database', 'read']);
+server.realm.modifiers.route.prefix = apiPrefix;
 
 const validate = async (decoded, request) => {
 

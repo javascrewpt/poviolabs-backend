@@ -5,7 +5,7 @@ const Lab = require('lab');
 const Server = require('../server');
 const JWT = require('jsonwebtoken');
 const Faker = require('faker');
-const { key } = require('../src/utils/config');
+const { key, apiPrefix } = require('../src/utils/config');
 
 const { describe, before, it } = exports.lab = Lab.script();
 const { expect } = Code;
@@ -15,13 +15,13 @@ const User = require('../src/models/user');
 
 const requestSignup = {
     method: 'POST',
-    url: '/signup',
+    url: `${apiPrefix}/signup`,
     payload: {}
 };
 
 const requestLogin = {
     method: 'POST',
-    url: '/login',
+    url: `${apiPrefix}/login`,
     payload: {}
 };
 
@@ -61,7 +61,7 @@ describe('Likes and unlikes.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: `/user/${savedDummyUsers[1]._id}`
+            url:`${apiPrefix}/user/${savedDummyUsers[1]._id}`
         });
 
         expect(response.result.username).to.equal(savedDummyUsers[1].username);
@@ -72,7 +72,7 @@ describe('Likes and unlikes.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: `/user/${Faker.internet.password()}`
+            url: `${apiPrefix}/user/${Faker.internet.password()}`
         });
 
         expect(response.result.message).to.equal('Argument passed in must be a single String of 12 bytes or a string of 24 hex characters');
@@ -94,7 +94,7 @@ describe('Likes and unlikes.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: `/user/${savedDummyUsers[1]._id}/like`,
+            url: `${apiPrefix}/user/${savedDummyUsers[1]._id}/like`,
             headers: {
                 'Authorization': token
             }
@@ -118,7 +118,7 @@ describe('Likes and unlikes.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: `/user/${savedDummyUsers[1]._id}/like`,
+            url: `${apiPrefix}/user/${savedDummyUsers[1]._id}/like`,
             headers: {
                 'Authorization': token
             }
@@ -133,7 +133,7 @@ describe('Likes and unlikes.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: `/user/${savedDummyUsers[1]._id}/like`
+            url: `${apiPrefix}/user/${savedDummyUsers[1]._id}/like`
         });
 
         expect(response.statusCode).to.equal(401);
@@ -153,7 +153,7 @@ describe('Likes and unlikes.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: `/user/${JWT.verify(token, key)._id}/like`,
+            url: `${apiPrefix}/user/${JWT.verify(token, key)._id}/like`,
             headers: {
                 'Authorization': token
             }
@@ -175,7 +175,7 @@ describe('Likes and unlikes.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: `/user/${savedDummyUsers[1]._id}/unlike`,
+            url: `${apiPrefix}/user/${savedDummyUsers[1]._id}/unlike`,
             headers: {
                 'Authorization': token
             }
@@ -199,7 +199,7 @@ describe('Likes and unlikes.', () => {
 
         const response = await Server.inject({
             method: 'GET',
-            url: `/user/${savedDummyUsers[1]._id}/unlike`,
+            url: `${apiPrefix}/user/${savedDummyUsers[1]._id}/unlike`,
             headers: {
                 'Authorization': token
             }
