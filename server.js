@@ -10,7 +10,10 @@ const User = require('./src/models/user');
 
 const server = Hapi.server({
     port: 3000,
-    host: 'localhost'
+    host: 'localhost',
+    routes: {
+        cors: true
+    }
 });
 
 server.app.user = null;
