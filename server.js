@@ -14,6 +14,7 @@ const server = Hapi.server({
 });
 
 server.app.user = null;
+server.log(['error', 'database', 'read']);
 
 const validate = async (decoded, request) => {
 

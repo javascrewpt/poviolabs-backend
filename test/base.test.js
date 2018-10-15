@@ -9,7 +9,7 @@ const { expect } = Code;
 
 describe('Deployment.', () => {
 
-    it('Route does not exist. | 400 => Bad request.', async () => {
+    it('Route does not exist. | Bad request => 400.', async () => {
 
         const response = await Server.inject({
             method: 'GET',

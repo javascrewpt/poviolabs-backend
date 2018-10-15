@@ -1,8 +1,6 @@
 'use strict';
 
 const Joi = require('joi');
-const JWT = require('jsonwebtoken');
-const { key } = require('../utils/config');
 
 const UserController = require('../controllers/user');
 
@@ -40,6 +38,19 @@ module.exports = [{
         auth: 'jwt'
     }
 }, {
+    method: 'POST',
+    path: '/update-password',
+    handler: UserController.updatePassword,
+    options: {
+        auth: 'jwt',
+        validate: {
+            payload: {
+                oldPassword: Joi.string().min(3).max(200).required(),
+                newPassword: Joi.string().min(3).max(200).required()
+            }
+        }
+    }
+}, {
     method: 'GET',
     path: '/user/{id}',
     handler: UserController.userId,
@@ -64,15 +75,10 @@ module.exports = [{
     method: 'GET',
     path: '/most-liked',
     config: {
-        pre: [{
-            method: (request, h) => {
-
-                const user = request.headers.authorization ? JWT.verify(request.headers.authorization, key) : null;
-                return user ? user._id : null;
-            },
-            assign: 'userId'
-        }],
-        auth: false,
-        handler: UserController.list
+        auth: {
+            strategy: 'jwt',
+            mode: 'optional'
+        },
+        handler: UserController.mostLiked
     }
 }];

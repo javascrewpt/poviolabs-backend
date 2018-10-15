@@ -29,6 +29,7 @@ const dummyUser = {
     username: Faker.internet.userName(),
     password: Faker.internet.password()
 };
+let newPassword = null;
 
 describe('Logins.', () => {
 
@@ -118,6 +119,63 @@ describe('Logins.', () => {
         expect(Mongoose.Types.ObjectId.isValid(response.result._id)).to.be.true();
         expect(response.result.username).to.equal(username);
         expect(response.statusCode).to.equal(200);
+    });
+
+    it('Change password. | successful => 200', async () => {
+
+        const { username, password } = dummyUser;
+        newPassword = Faker.internet.password();
+
+        const token = (await Server.inject(Object.assign({}, requestLogin, {
+            payload: {
+                username,
+                password
+            }
+        }))).result.jwt;
+
+        const response = await Server.inject({
+            method: 'POST',
+            url: '/update-password',
+            headers: {
+                'Authorization': token
+            },
+            payload: {
+                oldPassword: password,
+                newPassword
+            }
+        });
+
+        expect(response.result.success).to.be.true();
+        expect(response.statusCode).to.equal(200);
+    });
+
+
+    it('Change password. | Failure, wrong existing username => 400', async () => {
+
+        const { username } = dummyUser;
+        const password = Faker.internet.password();
+
+        const token = (await Server.inject(Object.assign({}, requestLogin, {
+            payload: {
+                username,
+                password: newPassword
+            }
+        }))).result.jwt;
+
+        const response = await Server.inject({
+            method: 'POST',
+            url: '/update-password',
+            headers: {
+                'Authorization': token
+            },
+            payload: {
+                oldPassword: password,
+                newPassword: password
+            }
+        });
+
+        expect(response.result.message).to.equal('Existing password is not correct!');
+        expect(response.statusCode).to.equal(400);
     });
 
 });

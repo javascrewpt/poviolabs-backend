@@ -57,18 +57,29 @@ describe('Likes and unlikes.', () => {
         }
     });
 
-    it('List username & number of likes of a user. | successful => 200', async () => {
+    it('List username & number of likes of a user. | Success => 200.', async () => {
 
         const response = await Server.inject({
             method: 'GET',
             url: `/user/${savedDummyUsers[1]._id}`
         });
 
-        console.log(response.result);
-        //expect(response.result.likes).to.include(Mongoose.Types.ObjectId(JWT.verify(token, key)._id));
+        expect(response.result.username).to.equal(savedDummyUsers[1].username);
         expect(response.statusCode).to.equal(200);
+    });
+
+    it('List username & number of likes of a user. | Failure, user doesn\t exist. => 400.', async () => {
+
+        const response = await Server.inject({
+            method: 'GET',
+            url: `/user/${Faker.internet.password()}`
+        });
+
+        expect(response.result.message).to.equal('Argument passed in must be a single String of 12 bytes or a string of 24 hex characters');
+        expect(response.statusCode).to.equal(400);
 
     });
+
 
     it('Like a user. | successful => 200', async () => {
 
@@ -113,7 +124,6 @@ describe('Likes and unlikes.', () => {
             }
         });
 
-        console.log(response.result);
         expect(response.result.message).to.equal('Already liked the user!');
         expect(response.statusCode).to.equal(400);
 

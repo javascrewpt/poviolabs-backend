@@ -7,27 +7,6 @@ const JWT = require('jsonwebtoken');
 const { key } = require('../utils/config');
 const { hash, compare } = require('../utils/helper');
 
-const getUser = async (id) => {
-
-    try {
-        const user = await User.aggregate([
-            { $match: { _id: id } },
-            {
-                $project: {
-                    username: 1,
-                    noOfLikes: {
-                        $size: '$likes'
-                    }
-                }
-            }
-        ]).exec();
-        return user[0];
-    }
-    catch (error) {
-        return error;
-    }
-};
-
 // Sign up to the system (username, password)
 module.exports.signup = async (request, h) => {
 
@@ -48,8 +27,7 @@ module.exports.signup = async (request, h) => {
 
     }
     catch (error) {
-        console.log('error!', error);
-        return Boom.badRequest(error.message);
+        return Boom.badRequest(error);
     }
 };
 
@@ -81,11 +59,39 @@ module.exports.me = async (request, h) => {
 
     try {
         const id = Mongoose.Types.ObjectId(request.auth.credentials._id);
-        const user = await getUser(id);
+        const user = await User.findAndFormatUser(id);
         return user;
     }
     catch (error) {
         return error;
+    }
+};
+
+// Update the current user's password
+module.exports.updatePassword = async (request, h) => {
+
+    try {
+        const { oldPassword, newPassword } = request.payload;
+        const mongoId = Mongoose.Types.ObjectId(request.auth.credentials._id);
+        const user = await User.findById(mongoId);
+
+        const correctPassword = await compare(oldPassword, user.password);
+
+        if (correctPassword) {
+            const hashNewPassword = await hash(newPassword);
+            const updatedUser = await User.findByIdAndUpdate(mongoId, {
+                password: hashNewPassword
+            });
+            return {
+                success: true,
+                id: updatedUser._id
+            };
+        }
+
+        return Boom.badRequest('Existing password is not correct!');
+    }
+    catch (error) {
+        return Boom.badRequest(error);
     }
 };
 
@@ -94,11 +100,11 @@ module.exports.userId = async (request, h) => {
 
     try {
         const id = Mongoose.Types.ObjectId(encodeURIComponent(request.params.id));
-        const user = await getUser(id);
+        const user = await User.findAndFormatUser(id);
         return user;
     }
     catch (error) {
-        return error;
+        return Boom.badRequest(error);
     }
 };
 
@@ -165,29 +171,12 @@ module.exports.unlike = async (request, h) => {
 };
 
 // List users in a most liked to least liked
-module.exports.list = async (request, h) => {
+module.exports.mostLiked = async (request, h) => {
 
     try {
-        const id = request.pre.userId;
-        const users = await User.aggregate([{
-            $project: {
-                _id: 1,
-                username: 1,
-                didLike: {
-                    $in: [id, '$likes']
-                },
-                noOfLikes: {
-                    $size: '$likes'
-                }
-            }
-        },
-        {
-            $sort: { 'numberOfItems': -1 }
-        }
-
-        ]).exec();
+        const id = request.auth.credentials ? Mongoose.Types.ObjectId(request.auth.credentials._id) : null;
+        const users = await User.getMostLiked(id);
         return { users };
-
     }
     catch (error) {
         return Boom.badRequest(error.message);

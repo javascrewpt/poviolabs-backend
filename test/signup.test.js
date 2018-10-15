@@ -77,5 +77,4 @@ describe('Signing up | create account.', () => {
         expect(response.statusCode).to.equal(200);
     });
 
-
 });
