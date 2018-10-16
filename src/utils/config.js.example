@@ -4,5 +4,6 @@ module.exports = {
     url: `mongodb://localhost/user-likes`,
     user: `user`,
     pass: `pass`,
-    key: `secret`
+    key: `secret`,
+    apiPrefix: '/api/v0'
 };

@@ -37,6 +37,32 @@ userModel.statics.findAndFormatUser = async function (id) {
     }
 };
 
+userModel.statics.formatUser = async function (auth_id, user_id) {
+
+    try {
+        const user = await this.aggregate([
+            {
+                $match: { _id: user_id }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    username: 1,
+                    didLike: {
+                        $in: [auth_id, '$likes']
+                    },
+                    noOfLikes: {
+                        $size: '$likes'
+                    }
+                }
+            }]).exec();
+        return user[0];
+    }
+    catch (error) {
+        throw new Error(error);
+    }
+};
+
 userModel.statics.getMostLiked = async function (id) {
 
     try {
@@ -53,7 +79,7 @@ userModel.statics.getMostLiked = async function (id) {
             }
         },
         {
-            $sort: { 'numberOfItems': -1 }
+            $sort: { 'noOfLikes': -1, 'username': 1 }
         }
         ]).exec();
         return listMostLiked;

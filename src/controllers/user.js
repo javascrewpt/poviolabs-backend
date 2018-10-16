@@ -130,8 +130,8 @@ module.exports.like = async (request, h) => {
                     likes: id
                 }
             }, { new: true }).exec();
-
-            return updated;
+            const user = await User.formatUser(id, updated._id);
+            return user;
         }
 
         return Boom.badRequest(`Already liked the user!`);
@@ -160,7 +160,8 @@ module.exports.unlike = async (request, h) => {
                 }
             }, { new: true }).exec();
 
-            return updated;
+            const user = await User.formatUser(id, updated._id);
+            return user;
         }
 
         return Boom.badRequest('Not among the users that liked the person!');

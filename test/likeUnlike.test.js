@@ -10,7 +10,6 @@ const { key, apiPrefix } = require('../src/utils/config');
 const { describe, before, it } = exports.lab = Lab.script();
 const { expect } = Code;
 
-const Mongoose = require('mongoose');
 const User = require('../src/models/user');
 
 const requestSignup = {
@@ -34,6 +33,9 @@ const dummyUsers = [{
 }, {
     username: Faker.internet.userName(),
     password: Faker.internet.password()
+}, {
+    username: 'PROvio',
+    password: 'p0v10'
 }];
 
 const savedDummyUsers = [];
@@ -100,7 +102,7 @@ describe('Likes and unlikes.', () => {
             }
         });
 
-        expect(response.result.likes).to.include(Mongoose.Types.ObjectId(JWT.verify(token, key)._id));
+        expect(response.result.didLike).to.be.true();
         expect(response.statusCode).to.equal(200);
 
     });
@@ -181,9 +183,8 @@ describe('Likes and unlikes.', () => {
             }
         });
 
-        expect(response.result.likes).to.not.include(Mongoose.Types.ObjectId(JWT.verify(token, key)._id));
+        expect(response.result.didLike).to.be.false();
         expect(response.statusCode).to.equal(200);
-
     });
 
     it('Unlike a user. | failure, not among the likes => 400', async () => {
