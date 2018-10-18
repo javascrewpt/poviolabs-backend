@@ -71,7 +71,6 @@ module.exports.me = async (request, h) => {
 module.exports.updatePassword = async (request, h) => {
 
     try {
-        
         const { oldPassword, newPassword } = request.payload;
         const mongoId = Mongoose.Types.ObjectId(request.auth.credentials._id);
         const user = await User.findById(mongoId);
